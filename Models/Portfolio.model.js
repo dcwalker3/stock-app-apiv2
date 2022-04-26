@@ -19,13 +19,6 @@ const PortfolioSchema = new mongoose.Schema({
         minlength: 1,
         maxlength: 100,
     },
-
-    portfolioValue: {
-        type: Number,
-        default: 0,
-        min: 0,
-        max: 1000000,
-    },
 }, {timestamps: true});
 
 module.exports = Portfolio = mongoose.model('Portfolio', PortfolioSchema);

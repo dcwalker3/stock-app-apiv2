@@ -36,14 +36,16 @@ function getPortfolioValue(portfolioID, Callback) {
     })
 }
 
-function addPortfolio(portfolioID, userEmail, stockHoldings, Callback) {
+function addPortfolio( userEmail, stockHoldings=[], Callback) {
     // Create a new portfolio in the database;
     let newPortfolio = new Portfolio({
-        portfolioID: portfolioID,
         userEmail: userEmail,
         stockHoldings: stockHoldings,
-        portfolioValue: 0,
     });
+
+    console.log("User: " + userEmail);
+    console.log("New Portfolio: " + newPortfolio);
+
     newPortfolio.save((err, portfolio) => {
         if(err){
             console.log(err);
@@ -60,7 +62,32 @@ function getPortfolio(userEmail, Callback){
             console.log(err);
             Callback(false);
         } else {
-            Callback(portfolio);
+            if(portfolio){
+                Callback(portfolio);
+            } 
+            else {
+                addPortfolio(userEmail, function(portfolio){
+                    Callback(portfolio);
+                })
+            }
+        }
+    });
+}
+
+
+function updatePortfolioPositions(userEmail, stockHoldings, Callback){
+    Portfolio.findOneAndUpdate({userEmail: userEmail}, {stockHoldings: stockHoldings}, (err, portfolio) => {
+        if(err){
+            console.log(err);
+            Callback(false);
+        } else {
+            if(portfolio){
+                Callback(portfolio);
+            } else {
+                addPortfolio(userEmail, stockHoldings, function(portfolio){
+                    Callback(portfolio);
+                });
+            }
         }
     });
 }
@@ -69,4 +96,5 @@ module.exports = {
     getPortfolioValue,
     addPortfolio,
     getPortfolio,
+    updatePortfolioPositions
 }
